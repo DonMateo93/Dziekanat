@@ -18,9 +18,15 @@ TEMPLATE = app
 SOURCES += main.cpp \
     osoba.cpp \
     przedmiot.cpp \
-    rok.cpp
+    rok.cpp \
+    silnik.cpp \
+    interfejs.cpp
 
 HEADERS += \
     osoba.h \
     przedmiot.h \
-    rok.h
+    rok.h \
+    silnik.h \
+    interfejs.h
+
+INCLUDEPATH += "C:\Users\avans\Documents\WirtualnyDziekanat"

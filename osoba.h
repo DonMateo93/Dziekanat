@@ -3,8 +3,15 @@
 
 #include <QString>
 #include <QDate>
-#include <przedmiot.h>
+#include <QList>
+#include "przedmiot.h"
 #include "rok.h"
+#include "osoba.h"
+
+class Grupa;
+class PrzedmiotInfoS;
+class SkladowaInfoP;
+class Rok;
 
 class Osoba
 {
@@ -37,14 +44,8 @@ class Pracownik: public Osoba
 protected:
     QString instytut;
     QString tytul;
-public:
+    QList<SkladowaInfoP*> skladoweLista;
 
-};
-
-class Prowadzacy: public Pracownik
-{
-    QList<Przedmiot*> przedList;
-public:
 };
 
 class Grupa
@@ -56,10 +57,7 @@ class Grupa
     QString specjalnosc;
     QString wydzial;
     QString kierunek;
-public:
 
 };
-
-
 
 #endif // OSOBA_H

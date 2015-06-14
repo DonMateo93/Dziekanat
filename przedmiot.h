@@ -3,8 +3,14 @@
 
 #include <QString>
 #include <QDate>
+#include <QList>
 #include "osoba.h"
 #include "rok.h"
+
+class Przedmiot;
+class Semestr;
+class Pracownik;
+class Grupa;
 
 enum Ocena
 {
@@ -72,7 +78,7 @@ public:
 class EdycjaPrzedmotu: public Przedmiot
 {
     Semestr* semestr;
-    Prowadzacy* prowadzacy;
+    Pracownik* prowadzacy;
 public:
 
 };
@@ -89,6 +95,12 @@ class PrzedmiotInfoS
     Przedmiot* przedmiot;
     Ocena koncowa;
     QList<SkladowaInfoS*> skladowa;
+};
+
+class SkladowaInfoP
+{
+    SkladowaPrzedmiotu* skladowa;
+    QList<Grupa*> ktoreGrupy;
 };
 
 #endif // PRZEDMIOT_H
