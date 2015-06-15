@@ -66,11 +66,14 @@ class Przedmiot
 {
 protected:
     int ects;
+    QString nazwa;
     QString opis;
     QString skrot;
     QList<SkladowaPrzedmiotu*> skladoweList;
 
 public:
+    QString getInfo(bool szczegolowo = 0);
+    QStringList jakieSkladowe();
     Przedmiot();
     ~Przedmiot();
 };
@@ -80,7 +83,7 @@ class EdycjaPrzedmotu: public Przedmiot
     Semestr* semestr;
     Pracownik* prowadzacy;
 public:
-
+    QString getInfo(bool szczegolowo = 0);
 };
 
 class SkladowaInfoS

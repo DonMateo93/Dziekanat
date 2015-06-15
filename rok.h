@@ -5,20 +5,24 @@
 #include "osoba.h"
 #include "przedmiot.h"
 #include <QList>
+#include <QStringList>
 
 class Pracownik;
 class Grupa;
 class Przedmiot;
+class EdycjaPrzedmotu;
 
 class Semestr
 {
 
     QDate start;
     QDate end;
-    QList<Przedmiot*> przedmioty;
+    QList<EdycjaPrzedmotu*> przedmioty;
 public:
     QDate getStart();
     QDate getEnd();
+    QString getInfo();
+    QStringList getInfoPrzedmioty();
     Semestr(QDate st, QDate en);
     ~Semestr();
 };
@@ -30,7 +34,12 @@ class Rok
     Semestr* pierwszy;
     Semestr* drugi;
 public:
+    Grupa* getGrupaAt(int at);
+    Semestr* getSem(int a);
+    QStringList getGrupy();
+    QStringList getPracownicy();
     QString getRok();
+    QString getInfo();
     Rok(Semestr *pierw, Semestr *dru);
     ~Rok();
 };

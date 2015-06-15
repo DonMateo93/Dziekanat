@@ -15,7 +15,9 @@ class Silnik
     QList<Rok*> listaLat;
 public:
     void addNowyRok(QDate st1, QDate en1, QDate st2, QDate en2);
+    QString getInfoRokAt(int i);
     QStringList getLataAkademickie();
+    Rok* getRokAt(int at);
     Silnik();
     ~Silnik();
 };
