@@ -24,9 +24,6 @@ enum Ocena
 
 class SkladowaPrzedmiotu
 {
-protected:
-    Przedmiot* przedmiot;
-
 public:
     virtual void f() = 0;
 };
@@ -74,6 +71,11 @@ protected:
 public:
     QString getInfo(bool szczegolowo = 0);
     QStringList jakieSkladowe();
+    QString getNazwa(){return nazwa;}
+    QString getOpis(){return opis;}
+    QString getSkrot(){return skrot;}
+    int getECTS(){return ects;}
+    QList<SkladowaPrzedmiotu*> getSkladowe(){return skladoweList;}
     Przedmiot();
     ~Przedmiot();
 };
@@ -84,6 +86,10 @@ class EdycjaPrzedmotu: public Przedmiot
     Pracownik* prowadzacy;
 public:
     QString getInfo(bool szczegolowo = 0);
+    void setProwadzacy(Pracownik* pr);
+    EdycjaPrzedmotu();
+    EdycjaPrzedmotu(Przedmiot* przedmiot);
+
 };
 
 class SkladowaInfoS
@@ -95,7 +101,7 @@ class SkladowaInfoS
 
 class PrzedmiotInfoS
 {
-    Przedmiot* przedmiot;
+    EdycjaPrzedmotu* przedmiot;
     Ocena koncowa;
     QList<SkladowaInfoS*> skladowa;
 };

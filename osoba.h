@@ -61,7 +61,7 @@ class Grupa
 {
     QString id;
     QList<Student*> studList;
-    QList<Przedmiot*> przedList;
+    QList<EdycjaPrzedmotu*> przedList;
     Rok* rok;
     int rokStud;
     int semStud;
@@ -69,17 +69,21 @@ class Grupa
     QString wydzial;
     QString kierunek;
 public:
+    Rok *getRok();
     int getRokStud(){return rokStud;}
     int getSemStud(){return semStud;}
     void usunStudentaAt(int at);
     void addStudent(Student* stud);
+    void addPrzedmiot(EdycjaPrzedmotu* przedmiot);
+    void usunPrzedmiotAt(int at, bool zastDoStud = 0);
+    bool czyJestPrzedmiot(EdycjaPrzedmotu* przedmiot);
     QString getID();
     QString getInfo();
     QString getSpec(){return specjalnosc;}
     QString getWydzial(){return wydzial;}
     QString getKierunek(){return kierunek;}
     QStringList getStudList();
-    QString getPrzedmList();
+    QStringList getPrzedmList();
 
 
 };

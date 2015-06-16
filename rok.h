@@ -19,6 +19,8 @@ class Semestr
     QDate end;
     QList<EdycjaPrzedmotu*> przedmioty;
 public:
+    EdycjaPrzedmotu* getPrzedmiotAt(int at);
+    int getIlePrzedmiotow();
     QDate getStart();
     QDate getEnd();
     QString getInfo();
@@ -34,13 +36,18 @@ class Rok
     Semestr* pierwszy;
     Semestr* drugi;
 public:
+    EdycjaPrzedmotu* getPrzedmiotAt(int at);
+    Pracownik* getPracownikAt(int at);
     Grupa* getGrupaAt(int at);
     Semestr* getSem(int a);
     QStringList getGrupy();
     QStringList getPracownicy();
     QString getRok();
     QString getInfo();
+    QStringList getPrzedmioty();
     Rok(Semestr *pierw, Semestr *dru);
+    void aktualizujEdycjeWGrupach();
+    void dodajEdycjePrzedmiotu(Przedmiot* przedm, Pracownik *pracownik, Semestr *semestr);
     ~Rok();
 };
 

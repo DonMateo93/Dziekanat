@@ -258,8 +258,7 @@ void Interfejs::grupaEdit(Rok *rok)
                 lista << "PRZEGLADAJ STUDENTOW";
                 lista << "USUN STUDENTA";
                 lista << "DODAJ STUDENTA";
-                lista << "USUN PRZEDMIOT";
-                lista << "DODAJ PRZEDMIOT";
+                lista << "EDYTUJ PRZEDMIOTY";//TUUUUU
                 lista << "POWROT";
 
                 QStringList pomocnicza;
@@ -307,13 +306,10 @@ void Interfejs::grupaEdit(Rok *rok)
                     break;
                 case 4:
                     system("CLS");
-
+                    przedmiotyGrupyEdit(grupa);
                     break;
                 case 5:
                     system("CLS");
-
-                    break;
-                case 6:
                     powrot = true;
                     break;
                 }
@@ -425,7 +421,7 @@ void Interfejs::runMenuPrzedmioty(Rok* rok)
                 {
                 case 1:
                     system("CLS");
-
+                    przedmiotyRokEdit(rok);
                     break;
                 case 2:
                     system("CLS");
@@ -443,6 +439,148 @@ void Interfejs::runMenuPrzedmioty(Rok* rok)
         }
     }else{
         qDebug().noquote() << "BLAD. BRAK REFERENCJI";
+    }
+}
+
+void Interfejs::przedmiotyRokEdit(Rok *rok)
+{
+    if(rok != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList przedmioty = rok->getPrzedmioty();
+            wydrukListyZNumeracja(przedmioty,"EDYCJE PRZEDMIOTOW W ROKU AKADEMICKIM" + rok->getRok(),1);
+
+            int wybor = pobierzIntZZakresu( przedmioty.size(), 1,"WYBIERZ PRZEDMIOT");
+
+            if(wybor == przedmioty.size()){
+                powrot = true;
+            }else{
+                EdycjaPrzedmotu* przedmiot = rok->getPrzedmiotAt(wybor -1);
+                qDebug().noquote() << przedmiot->getInfo(1);
+                if(pytanieTakNie("CZY CHCESZ ZMIENIC PROWADZACEGO?")){
+                    QStringList pracownicy = rok->getPracownicy();
+                    int wybor2 = wydrukListaWybor(pracownicy,"WYBIERZ NOWEGO PROWADZACEGO" + rok->getRok(),1);
+                    if(wybor2 < pracownicy.size()){
+                        przedmiot->setProwadzacy(rok->getPracownikAt(wybor-1));
+                    }
+                }
+
+                system("CLS");
+                qDebug().noquote() << "INNE OPCJE MOŻESZ EYDTOWAĆ TYLKO W SZABLONACH PRZEDMIOTU";
+                QTextStream s(stdin);
+                s.readLine();
+            }
+        }
+    }
+}
+
+void Interfejs::przedmiotyGrupyEdit(Grupa *grupa)
+{
+    if(grupa != NULL){
+        bool powrot = false;
+        while(!powrot){
+
+            QString pomoc;
+            QStringList przedmioty = grupa->getPrzedmList();
+            for(int j = 0; j < przedmioty.size(); j++){
+                pomoc = QString::number(j+1) + "." + przedmioty.at(j);
+                przedmioty.replace(j,pomoc);
+            }
+
+            qDebug().noquote() << "PRZEDMIOTY W GRUPIE " + grupa->getID();
+            qDebug().noquote() << przedmioty.join("\n");
+
+            QStringList lista;
+            lista.clear();
+            lista << "DODAJ PRZEDMIOT";
+            lista << "USUN PRZEDMIOT";
+            lista << "POWROT";
+
+            QString pom;
+            for(int i = 0; i < lista.size(); i++){
+                pom = QString::number(i+1) + "." + lista.at(i);
+                lista.replace(i,pom);
+            }
+
+            qDebug().noquote() << lista.join("\n") << endl;
+
+            int wybor;
+            if(lista.size() != 0){
+                wybor = pobierzIntZZakresu( lista.size(), 1,"WYBIERZ OPCJE WYBIERAJĄC ODPOWIEDNI NUMER I NACISKAJĄC ENTER");
+                switch(wybor)
+                {
+                case 1:
+                    system("CLS");
+                    dodajPrzedmiotDoGrupy(grupa);
+                    break;
+                case 2:
+                    system("CLS");
+                    usunPrzedmiotZGrupy(grupa);
+                    break;
+                case 3:
+                    system("CLS");
+                    powrot = true;
+                    break;
+                }
+            }
+        }
+    }else
+        qDebug().noquote() << "BLAD. BRAK REFERENCJI";
+}
+
+void Interfejs::dodajPrzedmiotDoGrupy(Grupa *grupa)
+{
+    bool powrot = false;
+    while(!powrot){
+        QStringList przedmioty = (grupa->getRok())->getPrzedmioty();
+
+        QString pom;
+        for(int k = 0; k < przedmioty.size(); k++){
+            pom = QString::number(k+1) + "." + przedmioty.at(k);
+            przedmioty.replace(k,pom);
+        }
+        przedmioty << QString::number(przedmioty.size()+1) + ".POWROT";
+
+        qDebug().noquote() << "WYBIERZ PRZEDMIOT DO DODANIA: ";
+        qDebug().noquote() << przedmioty.join("\n");
+
+        int wybor = pobierzIntZZakresu( przedmioty.size(), 1,"WYBIERZ OPCJE WYBIERAJĄC ODPOWIEDNI NUMER I NACISKAJĄC ENTER");
+
+        if(wybor == przedmioty.size()){
+            powrot = true;
+        }else{
+            if(!grupa->czyJestPrzedmiot(grupa->getRok()->getPrzedmiotAt(wybor - 1)))
+                grupa->addPrzedmiot(grupa->getRok()->getPrzedmiotAt(wybor - 1));
+        }
+    }
+
+}
+
+void Interfejs::usunPrzedmiotZGrupy(Grupa *grupa)
+{
+    bool powrot = false;
+    while(!powrot){
+        QStringList przedmioty = grupa->getPrzedmList();
+
+        QString pom;
+        for(int k = 0; k < przedmioty.size(); k++){
+            pom = QString::number(k+1) + "." + przedmioty.at(k);
+            przedmioty.replace(k,pom);
+        }
+        przedmioty << QString::number(przedmioty.size()+1) + ".POWROT";
+
+        qDebug().noquote() << "WYBIERZ PRZEDMIOT DO USUNIECIA";
+        qDebug().noquote() << przedmioty.join("\n");
+
+        int wybor = pobierzIntZZakresu( przedmioty.size(), 1,"WYBIERZ OPCJE WYBIERAJĄC ODPOWIEDNI NUMER I NACISKAJĄC ENTER");
+
+        if(wybor == przedmioty.size()){
+            powrot = true;
+        }else{
+            bool czy = pytanieTakNie("CZY USUNAC TEN PRZEDMIOT TAKZE DLA STUDENTOW TEJ GRUPY?");
+            grupa->usunPrzedmiotAt(wybor - 1, czy);
+        }
     }
 }
 
@@ -478,6 +616,53 @@ int Interfejs::pobierzIntZZakresu(int gorny, int dolny, QString text = "")
 
     system("CLS");
     return zwrot;
+}
+
+bool Interfejs::pytanieTakNie(QString text)
+{
+    qDebug().noquote()<<text;
+    qDebug().noquote()<<"1.TAK";
+    qDebug().noquote()<<"0.NIE";
+    int wybor = pobierzIntZZakresu(1,0);
+    if(wybor == 1){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+void Interfejs::wydrukListyZNumeracja(QStringList &lista, QString text, bool dodajPowrot)
+{
+    QString pom;
+    for(int k = 0; k < lista.size(); k++){
+        pom = QString::number(k+1) + "." + lista.at(k);
+        lista.replace(k,pom);
+    }
+
+    if(dodajPowrot){
+        lista << QString::number(lista.size()+1) + ".POWROT";
+    }
+
+    qDebug().noquote() << text;
+    qDebug().noquote() << lista.join("\n");
+}
+
+int Interfejs::wydrukListaWybor(QStringList &lista, QString text, bool dodajPowrot)
+{
+    QString pom;
+    for(int k = 0; k < lista.size(); k++){
+        pom = QString::number(k+1) + "." + lista.at(k);
+        lista.replace(k,pom);
+    }
+
+    if(dodajPowrot){
+        lista << QString::number(lista.size()+1) + ".POWROT";
+    }
+
+    qDebug().noquote() << text;
+    qDebug().noquote() << lista.join("\n");
+
+    return pobierzIntZZakresu(lista.size(),1);
 }
 
 Student *Interfejs::tworzStudenta(Grupa* grupa)

@@ -9,10 +9,12 @@
 #include "rok.h"
 
 class Rok;
+class Przedmiot;
 
 class Silnik
 {
     QList<Rok*> listaLat;
+    QList<Przedmiot*> listaPrzedm;
 public:
     void addNowyRok(QDate st1, QDate en1, QDate st2, QDate en2);
     QString getInfoRokAt(int i);

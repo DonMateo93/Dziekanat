@@ -65,3 +65,26 @@ QString EdycjaPrzedmotu::getInfo(bool szczegolowo)
 
     return zwrot;
 }
+
+void EdycjaPrzedmotu::setProwadzacy(Pracownik *pr)
+{
+    if(pr != NULL)
+        prowadzacy = pr;
+}
+
+EdycjaPrzedmotu::EdycjaPrzedmotu(Przedmiot *przedmiot)
+{
+    ects = przedmiot->getECTS();
+    nazwa = przedmiot->getNazwa();
+    opis = przedmiot->getOpis();
+    skrot = przedmiot->getSkrot();
+    QList<SkladowaPrzedmiotu*> lista = przedmiot->getSkladowe();
+
+    QStringList listas = przedmiot->jakieSkladowe();
+    QString str = "Egzamin";
+    if(listas.contains(str)){
+        SkladowaPrzedmiotu* skl = new Egzamin;
+        skladoweList<<skl;
+    }
+}
+

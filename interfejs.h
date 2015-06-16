@@ -25,7 +25,14 @@ public:
     void grupaAdd(Rok *rok);
     void runMenuPracownicy(Rok *rok);
     void runMenuPrzedmioty(Rok *rok);
+    void przedmiotyRokEdit(Rok *rok);
+    void przedmiotyGrupyEdit(Grupa* grupa);
+    void dodajPrzedmiotDoGrupy(Grupa* grupa);
+    void usunPrzedmiotZGrupy(Grupa* grupa);
     int pobierzIntZZakresu(int gorny, int dolny, QString text);
+    bool pytanieTakNie(QString text = "");
+    void wydrukListyZNumeracja(QStringList &lista, QString text = "", bool dodajPowrot = 0);
+    int wydrukListaWybor(QStringList &lista, QString text = "", bool dodajPowrot = 0);
     Student* tworzStudenta(Grupa *grupa);
     QDate pobierzDate(QString text);
     Interfejs();

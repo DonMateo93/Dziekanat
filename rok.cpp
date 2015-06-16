@@ -1,5 +1,27 @@
 #include "rok.h"
 
+EdycjaPrzedmotu *Rok::getPrzedmiotAt(int at)
+{
+    if(at < pierwszy->getIlePrzedmiotow() && at >=0){
+        return pierwszy->getPrzedmiotAt(at);
+    }else{
+        at = at - pierwszy->getIlePrzedmiotow();
+        if(at < drugi->getIlePrzedmiotow() && at >=0)
+            return drugi->getPrzedmiotAt(at);
+        else
+            return NULL;
+    }
+}
+
+Pracownik *Rok::getPracownikAt(int at)
+{
+    if(at < pracownicyLista.size() && at >= 0){
+        return pracownicyLista.at(at);
+    }else{
+        return NULL;
+    }
+}
+
 Grupa *Rok::getGrupaAt(int at)
 {
     if(at < grupyLista.size() && at >= 0){
@@ -61,10 +83,28 @@ QString Rok::getInfo()
     return zwracana;
 }
 
+QStringList Rok::getPrzedmioty()
+{
+    QStringList zwrot;
+    zwrot = pierwszy->getInfoPrzedmioty();
+    zwrot += drugi->getInfoPrzedmioty();
+    return zwrot;
+}
+
 Rok::Rok(Semestr* pierw = NULL, Semestr* dru = NULL):pierwszy(pierw),drugi(dru)
 {
     pracownicyLista.clear();
     grupyLista.clear();
+}
+
+void Rok::aktualizujEdycjeWGrupach()
+{
+
+}
+
+void Rok::dodajEdycjePrzedmiotu(Przedmiot *przedm,Pracownik* pracownik, Semestr* semestr)
+{
+
 }
 
 Rok::~Rok()
@@ -73,6 +113,20 @@ Rok::~Rok()
 }
 
 
+
+EdycjaPrzedmotu *Semestr::getPrzedmiotAt(int at)
+{
+    if(at < przedmioty.size() && at >= 0){
+        return przedmioty.at(at);
+    }else{
+        return NULL;
+    }
+}
+
+int Semestr::getIlePrzedmiotow()
+{
+    return przedmioty.size();
+}
 
 QDate Semestr::getStart()
 {

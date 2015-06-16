@@ -58,6 +58,11 @@ QString Pracownik::getInfo(bool szczegolowo)
 }
 
 
+Rok *Grupa::getRok()
+{
+    return rok;
+}
+
 void Grupa::usunStudentaAt(int at)
 {
     if(at >= 0 && at <studList.size())
@@ -68,6 +73,35 @@ void Grupa::addStudent(Student *stud)
 {
     if(stud != NULL)
         studList.push_back(stud);
+}
+
+void Grupa::addPrzedmiot(EdycjaPrzedmotu *przedmiot)
+{
+    if(przedmiot != NULL)
+        przedList.append(przedmiot);
+}
+
+void Grupa::usunPrzedmiotAt(int at, bool zastDoStud)
+{
+    if(at < przedList.size() && at >= 0){
+        if(!zastDoStud){
+            przedList.removeAt(at);
+        }else{
+            przedList.removeAt(at);
+            //USUWANIE PRZEDMIOTOW OD STUDENTOW
+        }
+    }
+}
+
+bool Grupa::czyJestPrzedmiot(EdycjaPrzedmotu *przedmiot)
+{
+    bool jest = false;
+    for(int i = 0; i < przedList.size(); i++){
+        if(przedList.at(i) == przedmiot)
+            jest = true;
+    }
+
+    return jest;
 }
 
 QString Grupa::getID()
@@ -96,6 +130,18 @@ QStringList Grupa::getStudList()
 
     for(int i = 0; i < studList.size(); i ++){
         zwrot << studList.at(i)->getInfo();
+    }
+
+    return zwrot;
+}
+
+QStringList Grupa::getPrzedmList()
+{
+    QStringList zwrot;
+    zwrot.clear();
+
+    for(int i = 0; i < przedList.size(); i ++){
+        zwrot << przedList.at(i)->getInfo();
     }
 
     return zwrot;
