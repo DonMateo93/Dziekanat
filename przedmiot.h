@@ -19,7 +19,8 @@ enum Ocena
     cztery,
     trzyIpol,
     trzy,
-    dwa
+    dwa,
+    brak
 };
 
 enum SkladowaPrzedmiotu{
@@ -71,6 +72,16 @@ class SkladowaInfoS{
     SkladowaPrzedmiotu skladowa;
     Pracownik* pracownik;
     Ocena ocena;
+public:
+    SkladowaPrzedmiotu getSkladowa(){return skladowa;}
+    Pracownik* getPracownik(){return pracownik;}
+    Ocena getOcena(){return ocena;}
+    void setSkladowa(SkladowaPrzedmiotu skl){skladowa = skl;}
+    void setPracownik(Pracownik* prac);
+    void setOcena(Ocena oce){ocena = oce;}
+    QString getInfo();
+    QString getAsString();
+    QString getOcenaAsString();
 };
 
 class PrzedmiotInfoS
@@ -78,6 +89,14 @@ class PrzedmiotInfoS
     QList<SkladowaInfoS> skladowe;
     EdycjaPrzedmotu* przedmiot;
     Ocena koncowa;
+public:
+    EdycjaPrzedmotu* getEdycja(){return przedmiot;}
+    Ocena getKoncowa(){return koncowa;}
+    void setEdycja(EdycjaPrzedmotu* przedm);
+    void setKoncowa(Ocena konc);
+    void setListSklad(QList<SkladowaInfoS> skl);
+    QString getInfo();
+    QString getOcenaAsString();
 };
 
 

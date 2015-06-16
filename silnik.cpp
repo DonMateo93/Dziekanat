@@ -10,6 +10,96 @@ void Silnik::addNowyRok(QDate st1,QDate en1,QDate st2,QDate en2)
     listaLat.push_back(rok);
 }
 
+void Silnik::addPrzedmiot(Przedmiot *przedmiot)
+{
+    if(przedmiot != NULL)
+        listaPrzedm.push_back(przedmiot);
+}
+
+void Silnik::usunPrzedmiotAt(int at)
+{
+    if(at < listaPrzedm.size() && at >= 0){
+        listaPrzedm.removeAt(at);
+    }
+}
+
+void Silnik::usunPracownikAt(int at)
+{
+    if(at < pracownicy.size() && at >= 0){
+        pracownicy.removeAt(at);
+    }
+}
+
+void Silnik::usunStudentAt(int at)
+{
+    if(at < studenci.size() && at >= 0){
+        studenci.removeAt(at);
+    }
+}
+
+void Silnik::zamienPracownikAt(int at,Pracownik* pracownik)
+{
+    if(at < pracownicy.size() && at >= 0){
+        Pracownik* temp = pracownicy.at(at);
+        pracownicy.replace(at,pracownik);
+        delete temp;
+    }
+}
+
+void Silnik::zamienStudentAt(int at, Student *student)
+{
+    if(at < studenci.size() && at >= 0){
+        Student* temp = studenci.at(at);
+        studenci.replace(at,student);
+        delete temp;
+    }
+}
+
+void Silnik::adStudent(Student *student)
+{
+    if(student != NULL)
+        studenci.push_back(student);
+}
+
+void Silnik::adPracownik(Pracownik *pracownik)
+{
+    if(pracownik != NULL)
+        pracownicy.push_back(pracownik);
+}
+
+bool Silnik::czyJestPrzedmiotONazwie(QString nazwa)
+{
+    bool odp = false;
+    for(int i = 0; i < listaPrzedm.size(); i++){
+        if(listaPrzedm.at(i)->getNazwa() == nazwa)
+            odp = true;
+    }
+
+    return odp;
+}
+
+bool Silnik::czyJestPracownikOID(QString nazwa)
+{
+    bool odp = false;
+    for(int i = 0; i < pracownicy.size(); i++){
+        if(pracownicy.at(i)->getID() == nazwa)
+            odp = true;
+    }
+
+    return odp;
+}
+
+bool Silnik::czyJestStudentOIndeksie(int indeks)
+{
+    bool odp = false;
+    for(int i = 0; i < studenci.size(); i++){
+        if(studenci.at(i)->getAlbum() == indeks)
+            odp = true;
+    }
+
+    return odp;
+}
+
 QString Silnik::getInfoRokAt(int i)
 {
     if(i <= listaLat.size()){
@@ -53,6 +143,18 @@ QStringList Silnik::getPracownicy()
     return zwrot;
 }
 
+QStringList Silnik::getStudenci()
+{
+    QStringList zwrot;
+    zwrot.clear();
+
+    for(int i = 0; i < studenci.size(); i++){
+        zwrot << studenci.at(i)->getInfo();
+    }
+
+    return zwrot;
+}
+
 Pracownik *Silnik::getPracownikAt(int at)
 {
     if(at < pracownicy.size() && at >= 0){
@@ -69,6 +171,36 @@ Przedmiot *Silnik::getPrzedmiotAt(int at)
     }else{
         return NULL;
     }
+}
+
+QStringList Silnik::getNieprzydzieleniStudenci()
+{
+    QStringList lista;
+    for(int i = 0; i < studenci.size(); i++){
+        if(!studenci.at(i)->getCzyPrzydzielonyDoGrupy())
+            lista<<studenci.at(i)->getInfo();
+    }
+
+    return lista;
+}
+
+Student *Silnik::getNieprzydzielonyStudentAt(int at)
+{
+    Student* student;
+    int pom = 0;
+    for(int i = 0; i < studenci.size(); i++){
+        if(!studenci.at(i)->getCzyPrzydzielonyDoGrupy())
+        {
+            if(pom == at){
+                student = studenci.at(i);
+                break;
+            }
+            else
+                pom ++;
+        }
+    }
+
+    return student;
 }
 
 Rok *Silnik::getRokAt(int at)

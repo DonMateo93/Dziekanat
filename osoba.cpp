@@ -24,14 +24,20 @@ QString Student::getInfo(bool szczegolowo)
         zwrot += "PESEL: " + pesel + "\n";
         zwrot += "ADRES E-MAIL: " + mail + "\n";
         zwrot += "NR ALBUMU: " + QString::number(nrAlbumu) + "\n";
-        zwrot += "GRUPA: " + grupa->getID() + "\n";
-        zwrot += "WYDZIAŁ: " + grupa->getWydzial() + "\n";
-        zwrot += "KIERUNEK: " + grupa->getKierunek() + "\n";
-        zwrot += "SPECJALNOSC: " + grupa->getSpec() + "\n";
-        zwrot += "ROK STUDIOW: " + QString::number(grupa->getRokStud()) + "\n";
-        zwrot += "SEMESTR STUDIOW: " + QString::number(grupa->getSemStud());
+        if(grupa != NULL){
+            zwrot += "GRUPA: " + grupa->getID() + "\n";
+            zwrot += "WYDZIAŁ: " + grupa->getWydzial() + "\n";
+            zwrot += "KIERUNEK: " + grupa->getKierunek() + "\n";
+            zwrot += "SPECJALNOSC: " + grupa->getSpec() + "\n";
+            zwrot += "ROK STUDIOW: " + QString::number(grupa->getRokStud()) + "\n";
+            zwrot += "SEMESTR STUDIOW: " + QString::number(grupa->getSemStud());
+        }else
+            zwrot += "NIEPRZYDZIELONY DO GRUPY";
     }else{
-        zwrot += imie +" "+ nazwisko +" "+ QString::number(nrAlbumu) +" "+ grupa->getID();
+        if(grupa != NULL)
+            zwrot += imie +" "+ nazwisko +" "+ QString::number(nrAlbumu) +" "+ grupa->getID();
+        else
+            zwrot += imie +" "+ nazwisko +" "+ QString::number(nrAlbumu) +" NIEPRZYDZIELNONY DO GRUPY";
     }
 
     return zwrot;
@@ -41,6 +47,35 @@ void Student::setGrupa(Grupa *gru)
 {
     if(gru != NULL)
         grupa = gru;
+}
+
+void Student::przypiszProwadzacego(Przedmiot *przedmiot, Pracownik *pracownik, SkladowaPrzedmiotu skladowa)
+{
+
+}
+
+void Student::przypiszOcene(Przedmiot *przedmiot, SkladowaPrzedmiotu skladowa, Ocena ocena)
+{
+
+}
+
+QString Student::getKartaOcen()
+{
+    QString zwrot;
+    for(int i = 0; i < przedmiotyInfo.size(); i++){
+        zwrot += "====================================\n";
+        QString pom = przedmiotyInfo.at(i).getInfo();
+        zwrot = zwrot + pom;
+        zwrot += "====================================\n";
+    }
+}
+
+bool Student::getCzyPrzydzielonyDoGrupy()
+{
+    if(grupa == NULL)
+        return false;
+    else
+        return true;
 }
 
 
@@ -60,6 +95,17 @@ QString Pracownik::getInfo(bool szczegolowo)
         zwrot += tytul +" "+ imie +" "+ nazwisko +" " + ID;
     }
 
+    return zwrot;
+}
+
+QString Pracownik::getID()
+{
+    return ID;
+}
+
+QString Pracownik::getTytulImie()
+{
+    QString zwrot = tytul + " " + imie + " " + nazwisko;
     return zwrot;
 }
 
@@ -158,4 +204,13 @@ QStringList Grupa::getPrzedmList()
     }
 
     return zwrot;
+}
+
+Student *Grupa::getStudentAt(int at)
+{
+    if(at < studList.size() && at >= 0){
+        return studList.at(at);
+    }else{
+        return NULL;
+    }
 }

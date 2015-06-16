@@ -12,7 +12,10 @@
 class Grupa;
 class PrzedmiotInfoS;
 class SkladowaInfoP;
+class SkladowaInfoS;
 class Rok;
+enum SkladowaPrzedmiotu;
+enum Ocena;
 
 class Osoba
 {
@@ -37,14 +40,20 @@ class Student: public Osoba
     int nrAlbumu;
     int ECTS;
     Grupa* grupa;
-    QList<PrzedmiotInfoS*> przedmiotyInfo;
+    QList<PrzedmiotInfoS> przedmiotyInfo;
 public:
     QString getInfo(bool szczegolowo = 0);
     void setGrupa(Grupa* gru);
+    void przypiszProwadzacego(Przedmiot* przedmiot,Pracownik* pracownik,SkladowaPrzedmiotu skladowa);
+    void przypiszOcene(Przedmiot* przedmiot,SkladowaPrzedmiotu skladowa,Ocena ocena);
+    QString getKartaOcen();
+    Grupa* getGrupa(){return grupa;}
+    int getAlbum(){return nrAlbumu;}
+    bool getCzyPrzydzielonyDoGrupy();
     Student();
     Student(int nrAl,int ects,QString im,QString naz,QString adr,QString pes,QString mai,QDate dat,Grupa* gru = NULL)
         :Osoba(im,naz,adr,pes,mai,dat),nrAlbumu(nrAl),ECTS(ects),grupa(gru){}
-    ~Student();
+    ~Student(){}
 };
 
 class Pracownik: public Osoba
@@ -59,6 +68,8 @@ public:
     Pracownik(QString inst,QString tyt,QString id,QString ime,QString nazw,QString adr,QString pesel,QString email,QDate data)
         :instytut(inst),tytul(tyt),ID(id),Osoba(ime,nazw,adr,pesel,email,data){}
     QString getInfo(bool szczegolowo = 0);
+    QString getID();
+    QString getTytulImie();
 };
 
 class Grupa
@@ -92,6 +103,7 @@ public:
     QString getKierunek(){return kierunek;}
     QStringList getStudList();
     QStringList getPrzedmList();
+    Student *getStudentAt(int at);
 
 
 };

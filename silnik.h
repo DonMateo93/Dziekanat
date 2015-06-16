@@ -10,20 +10,36 @@
 
 class Rok;
 class Przedmiot;
+class Student;
 
 class Silnik
 {
     QList<Rok*> listaLat;
     QList<Przedmiot*> listaPrzedm;
     QList<Pracownik*> pracownicy;
+    QList<Student*> studenci;
 public:
     void addNowyRok(QDate st1, QDate en1, QDate st2, QDate en2);
+    void addPrzedmiot(Przedmiot* przedmiot);
+    void usunPrzedmiotAt(int at);
+    void usunPracownikAt(int at);
+    void usunStudentAt(int at);
+    void zamienPracownikAt(int at, Pracownik *pracownik);
+    void zamienStudentAt(int at, Student *student);
+    void adStudent(Student* student);
+    void adPracownik(Pracownik* pracownik);
+    bool czyJestPrzedmiotONazwie(QString nazwa);
+    bool czyJestPracownikOID(QString nazwa);
+    bool czyJestStudentOIndeksie(int indeks);
     QString getInfoRokAt(int i);
     QStringList getLataAkademickie();
     QStringList getPrzedmioty();
     QStringList getPracownicy();
+    QStringList getStudenci();
     Pracownik* getPracownikAt(int at);
     Przedmiot* getPrzedmiotAt(int at);
+    QStringList getNieprzydzieleniStudenci();
+    Student *getNieprzydzielonyStudentAt(int at);
     Rok* getRokAt(int at);
     Silnik();
     ~Silnik();

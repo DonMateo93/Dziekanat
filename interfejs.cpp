@@ -10,6 +10,14 @@ bool Interfejs::runMenuGlowne()
     lista.clear();
     lista << "DODAJ NOWY ROK AKADEMICKI";
     lista << "PRZEGLADAJ/EDYTUJ LATA AKADEMICKIE";
+    lista << "DODAJ SZABLON PRZEDMIOTU";
+    lista << "USUN SZABLON PRZEDMIOTU";
+    lista << "DODAJ PROWADZACEGO";
+    lista << "USUN PROWADZACEGO";
+    lista << "EDYTUJ PROWADZACEGO";
+    lista << "DODAJ STUDENTA";
+    lista << "USUN STUDENTA";
+    lista << "EDYTUJ STUDENTA";
     lista << "WYJDZ";
 
     QString pom;
@@ -32,6 +40,38 @@ bool Interfejs::runMenuGlowne()
             system("CLS");
             edycjaLataAkademickie();
             break;
+        case 3:
+            system("CLS");
+            dodajSzablonPrzedmiotu();
+            break;
+        case 4:
+            system("CLS");
+            ususnSzablonPrzedmiotu();
+            break;
+        case 5:
+            system("CLS");
+            dodajPracownika();
+            break;
+        case 6:
+            system("CLS");
+            usunPracownika();
+            break;
+        case 7:
+            system("CLS");
+            edytujPraownika();
+            break;
+        case 8:
+            system("CLS");
+            dodajStudenta();
+            break;
+        case 9:
+            system("CLS");
+            usunStudenta();
+            break;
+        case 10:
+            system("CLS");
+            edytujStudenta();
+            break;
         }
     }
 
@@ -39,6 +79,44 @@ bool Interfejs::runMenuGlowne()
         return true;
     else
         return false;
+}
+
+void Interfejs::dodajStudenta()
+{
+    Student* student = tworzStudenta();
+    if(!silnik->czyJestStudentOIndeksie(student->getAlbum()))
+        silnik->adStudent(student);
+    else
+        qDebug().noquote() <<"STUDENT O TAKIM INDEKSIE JUŻ ISTNIEJE!"<< endl;
+}
+
+void Interfejs::usunStudenta()
+{
+    bool powrot = false;
+    while(!powrot){
+        QStringList studenci = silnik->getStudenci();
+        int wybor = wydrukListaWybor(studenci,"WYBIERZ PRACOWNIKA DO USUNIECIA",1);
+        if(wybor == studenci.size())
+            powrot = true;
+        else{
+            silnik->usunStudentAt(wybor-1);
+        }
+    }
+}
+
+void Interfejs::edytujStudenta()
+{
+    bool powrot = false;
+    while(!powrot){
+        QStringList studenci = silnik->getStudenci();
+        int wybor = wydrukListaWybor(studenci,"WYBIERZ PRACOWNIKA DO EDYCJI",1);
+        if(wybor == studenci.size())
+            powrot = true;
+        else{
+            Student* student = tworzStudenta();
+            silnik->zamienStudentAt(wybor-1,student);
+        }
+    }
 }
 
 void Interfejs::dodajRok()
@@ -82,6 +160,116 @@ void Interfejs::dodajRok()
 
     silnik->addNowyRok(start1,end1,start2,end2);
 
+}
+
+void Interfejs::dodajSzablonPrzedmiotu()
+{
+
+    QTextStream s(stdin);
+    QString nazwa,opis,skrot;
+    bool ok = false;
+    while(!ok){
+        qDebug().noquote()<<"PODAJ NAZWE(MIN. 3 LITERY)";
+        nazwa = s.readLine();
+        if(nazwa.size()>2 && nazwa != "" && !silnik->czyJestPrzedmiotONazwie(nazwa))
+            ok = true;
+        else
+            qDebug().noquote()<<"BLAD! NAZWA JUZ WYSTAPILA LUB JEST ZA KROTKA";
+    }
+
+    ok = false;
+    while(!ok){
+        qDebug().noquote()<<"PODAJ SKROT(MIN. 2 LITERY)";
+        skrot = s.readLine();
+        if(skrot.size()>1 && skrot != "")
+            ok = true;
+        else
+            qDebug().noquote()<<"BLAD!";
+    }
+
+    ok = false;
+    while(!ok){
+        qDebug().noquote()<<"PODAJ OPIS";
+        opis = s.readLine();
+        if(opis != "")
+            ok = true;
+        else
+            qDebug().noquote()<<"BLAD!";
+    }
+
+    int ects = pobierzIntZZakresu(15,0,"PODAJ LICZBĘ ECTS(MAX 15)");
+
+    QList<SkladowaPrzedmiotu> lista;
+
+    if(pytanieTakNie("CZY PRZEDMIOT MA LABORATORIUM"))
+        lista<< Laboratorium;
+    if(pytanieTakNie("CZY PRZEDMIOT MA EGZAMIN"))
+        lista<< Egzamin;
+    if(pytanieTakNie("CZY PRZEDMIOT MA PROJEKT"))
+        lista<< Projekt;
+    if(pytanieTakNie("CZY PRZEDMIOT MA CWICZENIA"))
+        lista<< Cwiczenia;
+    if(pytanieTakNie("CZY PRZEDMIOT MA WYKLAD"))
+        lista<< Wyklad;
+
+    Przedmiot* przedmiot = new Przedmiot(nazwa,opis,skrot,lista,ects);
+    silnik->addPrzedmiot(przedmiot);
+
+    system("CLS");
+    qDebug().noquote()<<"SZABLON PRZEDMIOTU DODANY";
+    s.readLine();
+}
+
+void Interfejs::dodajPracownika()
+{
+    Pracownik* pracownik = tworzEdytujPracownika();
+    if(!silnik->czyJestPracownikOID(pracownik->getID())){
+        silnik->adPracownik(pracownik);
+    }
+}
+
+void Interfejs::usunPracownika()
+{
+    bool powrot = false;
+    while(!powrot){
+        QStringList pracownicy = silnik->getPracownicy();
+        int wybor = wydrukListaWybor(pracownicy,"WYBIERZ PRACOWNIKA DO USUNIECIA",1);
+        if(wybor == pracownicy.size())
+            powrot = true;
+        else{
+            silnik->usunPracownikAt(wybor-1);
+        }
+    }
+}
+
+void Interfejs::edytujPraownika()
+{
+    bool powrot = false;
+    while(!powrot){
+        QStringList pracownicy = silnik->getPracownicy();
+        int wybor = wydrukListaWybor(pracownicy,"WYBIERZ PRACOWNIKA DO EDYCJI",1);
+        if(wybor == pracownicy.size())
+            powrot = true;
+        else{
+            Pracownik* pracownik = tworzEdytujPracownika();
+            silnik->zamienPracownikAt(wybor-1,pracownik);
+        }
+    }
+}
+
+void Interfejs::ususnSzablonPrzedmiotu()
+{
+
+    bool powrot = false;
+    while(!powrot){
+        QStringList przedmioty = silnik->getPrzedmioty();
+        int wybor = wydrukListaWybor(przedmioty,"WYBIERZ SZABLON DO USUNIECIA",1);
+        if(wybor == przedmioty.size())
+            powrot = true;
+        else{
+            silnik->usunPrzedmiotAt(wybor-1);
+        }
+    }
 }
 
 void Interfejs::edycjaLataAkademickie()
@@ -239,6 +427,7 @@ void Interfejs::grupaEdit(Rok *rok)
     }
 
     qDebug().noquote() << "KTORA Z GRUP EDYTOWAC?";
+    qDebug().noquote() << grupy.join("\n");
     qDebug().noquote() << QString::number(grupy.size()+1) + ".POWROT";
     int wybor = pobierzIntZZakresu( grupy.size()+1, 1,"WYBIERZ OPCJE WYBIERAJĄC ODPOWIEDNI NUMER I NACISKAJĄC ENTER");
     if(wybor == grupy.size()+1){
@@ -258,14 +447,15 @@ void Interfejs::grupaEdit(Rok *rok)
                 lista << "PRZEGLADAJ STUDENTOW";
                 lista << "USUN STUDENTA";
                 lista << "DODAJ STUDENTA";
-                lista << "EDYTUJ PRZEDMIOTY";//TUUUUU
+                lista << "ZARZADZAJ KONTEM STUDENTOW";
+                lista << "EDYTUJ PRZEDMIOTY";
                 lista << "POWROT";
 
                 QStringList pomocnicza;
                 pomocnicza.clear();
-                int wybor2;
+                int wybor2 = wydrukListaWybor(lista,"WYBIERZ OPCJE");
 
-                switch(wybor)
+                switch(wybor2)
                 {
                 case 1:
                     system("CLS");
@@ -300,15 +490,17 @@ void Interfejs::grupaEdit(Rok *rok)
                     }
                     break;
                 case 3:
-                    system("CLS");
-                    qDebug().noquote() << grupa->getID();
-                    tworzStudenta(grupa);
+                    dodajStudentaDoGrupy(grupa);
                     break;
                 case 4:
                     system("CLS");
-                    przedmiotyGrupyEdit(grupa);
+                    zarzadzajKontemStudentow(grupa);
                     break;
                 case 5:
+                    system("CLS");
+                    przedmiotyGrupyEdit(grupa);
+                    break;
+                case 6:
                     system("CLS");
                     powrot = true;
                     break;
@@ -316,6 +508,64 @@ void Interfejs::grupaEdit(Rok *rok)
             }
         }
     }
+}
+
+void Interfejs::zarzadzajKontemStudentow(Grupa *grupa)
+{
+    if(grupa != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList studenci = grupa->getStudList();
+
+            int wybor = wydrukListaWybor(studenci,"WYBIERZ STUDENTA",1);
+
+            if(wybor == studenci.size()){
+                powrot = true;
+            }else{
+                zarzadzajKontemStudenta(grupa->getStudentAt(wybor-1));
+            }
+        }
+    }
+}
+
+void Interfejs::zarzadzajKontemStudenta(Student *student)
+{
+    if(student != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList lista;
+            lista.clear();
+            lista << "PRZYPISZ PROWADZACEGO DO SKLADOWYCH PRZEDMIOTU";
+            lista << "WPISZ OCENY";
+            lista << "PRZEGLADAJ KARTE OCEN";
+
+            int wybor = wydrukListaWybor(lista,"WYBIERZ OPCJE",1);
+
+            if(wybor == lista.size()){
+                powrot = true;
+            }else{
+                switch (wybor) {
+                case 1:
+
+                    break;
+                case 2:
+
+                    break;
+                case 3:
+                    student->getKartaOcen();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Interfejs::przypiszProwadzacegoDoSkladowej(Student *student)
+{
+    //QStringList pracownicy = student->getGrupa()->getRok()->getPracownicy();
+    //TU ZAZCZYNAMY
 }
 
 void Interfejs::grupaDelete(Rok *rok)
@@ -688,6 +938,22 @@ void Interfejs::dodajPrzedmiotDoGrupy(Grupa *grupa)
 
 }
 
+void Interfejs::dodajStudentaDoGrupy(Grupa *grupa)
+{
+    bool powrot = false;
+    while(!powrot){
+        QStringList studenci = silnik->getNieprzydzieleniStudenci();
+
+        int wybor = wydrukListaWybor(studenci,"WYBIERZ STUDENTA DO DODANIA",1);
+
+        if(wybor == studenci.size()){
+            powrot = true;
+        }else{
+            grupa->addStudent(silnik->getNieprzydzielonyStudentAt(wybor-1));
+        }
+    }
+}
+
 void Interfejs::usunPrzedmiotZGrupy(Grupa *grupa)
 {
     bool powrot = false;
@@ -819,12 +1085,44 @@ Student *Interfejs::tworzStudenta(Grupa* grupa)
     int album = pobierzIntZZakresu(999999,100000,"PODAJ NR ALBUMU");
 
     Student *stud = new Student(album,0,imie,nazwisko,adres,pesel,mail,dataUR,grupa);
-    grupa->addStudent(stud);
+    if(grupa != NULL)
+        grupa->addStudent(stud);
 
     system("CLS");
-    qDebug().noquote()<<"STUDENT DODANY";
-    s.readLine();
     return stud;
+}
+
+Pracownik *Interfejs::tworzEdytujPracownika(Pracownik *pracownik)
+{
+    QTextStream s(stdin);
+    qDebug().noquote()<<"PODAJ IMIE";
+    QString imie = s.readLine();
+
+    qDebug().noquote()<<"PODAJ NAZWISKO";
+    QString nazwisko = s.readLine();
+
+    qDebug().noquote()<<"PODAJ ADRES";
+    QString adres = s.readLine();
+
+    QDate dataUR = pobierzDate("PODAJ DATE URODZENIA");
+
+    qDebug().noquote()<<"PODAJ PESEL";
+    QString pesel = s.readLine();
+
+    qDebug().noquote()<<"PODAJ E-MAIL";
+    QString mail = s.readLine();
+
+    qDebug().noquote()<<"PODAJ INSTYTUT";
+    QString instytut = s.readLine();
+
+    qDebug().noquote()<<"PODAJ TYTUL NAUKOWY";
+    QString tytul = s.readLine();
+
+    qDebug().noquote()<<"PODAJ NR REFERENCYJNY";
+    QString ID = s.readLine();
+
+    Pracownik* pracow = new Pracownik(instytut,tytul,ID,imie,nazwisko,adres,pesel,mail,dataUR);
+    return pracow;
 }
 
 Grupa *Interfejs::tworzGrupe(Rok* rok)
