@@ -31,6 +31,12 @@ Grupa *Rok::getGrupaAt(int at)
     }
 }
 
+void Rok::adGrupa(Grupa *grupa)
+{
+    if(grupa != NULL && !czyJestGrupaONazwie(grupa->getNazwa()))
+        grupyLista.push_back(grupa);
+}
+
 Semestr *Rok::getSem(int a)
 {
     if(a == 1){
@@ -95,6 +101,7 @@ Rok::Rok(Semestr* pierw = NULL, Semestr* dru = NULL):pierwszy(pierw),drugi(dru)
 {
     pracownicyLista.clear();
     grupyLista.clear();
+    aktualny  = 1;
 }
 
 void Rok::aktualizujEdycjeWGrupach()
@@ -102,9 +109,91 @@ void Rok::aktualizujEdycjeWGrupach()
 
 }
 
-void Rok::dodajEdycjePrzedmiotu(Przedmiot *przedm,Pracownik* pracownik, Semestr* semestr)
+void Rok::dodajEdycjePrzedmiotu(Przedmiot *przedm, Pracownik* pracownik, int semestr)
 {
+    if(semestr == 1 || semestr == 2){
+        EdycjaPrzedmotu* edycja = new EdycjaPrzedmotu(przedm,pracownik);
+        dodajEdycjePrzedmiotu(edycja,semestr);
+    }
+}
 
+void Rok::dodajEdycjePrzedmiotu(EdycjaPrzedmotu* edycja, int sem)
+{
+    if(sem == 1){
+        pierwszy->addPrzedmiot(edycja);
+    }else if(sem == 2){
+        drugi->addPrzedmiot(edycja);
+    }
+}
+
+void Rok::usunPrzedmiotAt(int at)
+{
+    if(at < pierwszy->getIlePrzedmiotow() && at >=0){
+       pierwszy->usunPrzedmiotAt(at);
+    }else{
+        at = at - pierwszy->getIlePrzedmiotow();
+        if(at < drugi->getIlePrzedmiotow() && at >=0)
+            drugi->usunPrzedmiotAt(at);
+    }
+}
+
+bool Rok::czyPracownikAtPracuje(int at)
+{
+        //sprawdzanie czy prowadzi przedmioty jakies
+    return true;
+}
+
+void Rok::adPracownik(Pracownik *pracownik)
+{
+    bool ok = true;
+    for(int i = 0; i < pracownicyLista.size(); i++){
+        if(pracownicyLista.at(i) == pracownik)
+            ok = false;
+    }
+    if(ok)
+        pracownicyLista.push_back(pracownik);
+}
+
+void Rok::usunPracownikAt(int at)
+{
+    if(at < pracownicyLista.size() && at >= 0)
+        pracownicyLista.removeAt(at);
+}
+
+void Rok::usunGrupaAt(int at)
+{
+    if(at < grupyLista.size() && at >= 0)
+        grupyLista.removeAt(at);
+}
+
+void Rok::zmienSem()
+{
+    if(aktualny == 1){
+        aktualny = 2;
+    }else
+        aktualny = 1;
+}
+
+bool Rok::czyJestGrupaONazwie(QString nazwa)
+{
+    bool jest = false;
+
+    for(int i = 0; i < grupyLista.size(); i++){
+        if(grupyLista.at(i)->getNazwa() == nazwa)
+            jest = true;
+    }
+
+    return jest;
+}
+
+bool Rok::czyJestPracownik(Pracownik *pracownik)
+{
+    bool jest = false;
+    for(int i = 0; i < pracownicyLista.size(); i++){
+        if(pracownicyLista.at(i) == pracownik)
+            jest = true;
+    }
+    return jest;
 }
 
 Rok::~Rok()
@@ -161,4 +250,16 @@ QStringList Semestr::getInfoPrzedmioty()
 Semestr::Semestr(QDate st, QDate en):start(st), end(en)
 {
 
+}
+
+void Semestr::addPrzedmiot(EdycjaPrzedmotu *przedm)
+{
+    przedmioty.push_back(przedm);
+}
+
+void Semestr::usunPrzedmiotAt(int at)
+{
+    if(at < przedmioty.size() && at >= 0){
+        przedmioty.removeAt(at);
+    }
 }

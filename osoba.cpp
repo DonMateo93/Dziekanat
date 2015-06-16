@@ -37,6 +37,12 @@ QString Student::getInfo(bool szczegolowo)
     return zwrot;
 }
 
+void Student::setGrupa(Grupa *gru)
+{
+    if(gru != NULL)
+        grupa = gru;
+}
+
 
 QString Pracownik::getInfo(bool szczegolowo)
 {
@@ -71,8 +77,10 @@ void Grupa::usunStudentaAt(int at)
 
 void Grupa::addStudent(Student *stud)
 {
-    if(stud != NULL)
+    if(stud != NULL){
         studList.push_back(stud);
+        stud->setGrupa(this);
+    }
 }
 
 void Grupa::addPrzedmiot(EdycjaPrzedmotu *przedmiot)
@@ -108,6 +116,11 @@ QString Grupa::getID()
 {
     QString zwrot = id + " " + rok->getRok();
     return zwrot;
+}
+
+QString Grupa::getNazwa()
+{
+    return id;
 }
 
 QString Grupa::getInfo()

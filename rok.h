@@ -26,6 +26,8 @@ public:
     QString getInfo();
     QStringList getInfoPrzedmioty();
     Semestr(QDate st, QDate en);
+    void addPrzedmiot(EdycjaPrzedmotu* przedm);
+    void usunPrzedmiotAt(int at);
     ~Semestr();
 };
 
@@ -35,10 +37,12 @@ class Rok
     QList<Grupa*> grupyLista;
     Semestr* pierwszy;
     Semestr* drugi;
+    int aktualny;
 public:
     EdycjaPrzedmotu* getPrzedmiotAt(int at);
     Pracownik* getPracownikAt(int at);
     Grupa* getGrupaAt(int at);
+    void adGrupa(Grupa* grupa);
     Semestr* getSem(int a);
     QStringList getGrupy();
     QStringList getPracownicy();
@@ -47,7 +51,17 @@ public:
     QStringList getPrzedmioty();
     Rok(Semestr *pierw, Semestr *dru);
     void aktualizujEdycjeWGrupach();
-    void dodajEdycjePrzedmiotu(Przedmiot* przedm, Pracownik *pracownik, Semestr *semestr);
+    void dodajEdycjePrzedmiotu(Przedmiot* przedm, Pracownik *pracownik, int semestr);
+    void dodajEdycjePrzedmiotu(EdycjaPrzedmotu *edycja, int sem);
+    void usunPrzedmiotAt(int at);
+    bool czyPracownikAtPracuje(int at);
+    void adPracownik(Pracownik* pracownik);
+    void usunPracownikAt(int at);
+    void usunGrupaAt(int at);
+    int getAktualnySem(){return aktualny;}
+    void zmienSem();
+    bool czyJestGrupaONazwie(QString nazwa);
+    bool czyJestPracownik(Pracownik* pracownik);
     ~Rok();
 };
 

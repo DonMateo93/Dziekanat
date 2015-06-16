@@ -24,8 +24,13 @@ public:
     void grupaDelete(Rok *rok);
     void grupaAdd(Rok *rok);
     void runMenuPracownicy(Rok *rok);
+    void przegladPracownicyRok(Rok* rok);
+    void usunPracownikaZRoku(Rok* rok);
+    void dodajPracownikaDoRoku(Rok* rok);
     void runMenuPrzedmioty(Rok *rok);
     void przedmiotyRokEdit(Rok *rok);
+    void dodajPrzedmiotDoRoku(Rok *rok);
+    void usunPrzedmiotZroku(Rok* rok);
     void przedmiotyGrupyEdit(Grupa* grupa);
     void dodajPrzedmiotDoGrupy(Grupa* grupa);
     void usunPrzedmiotZGrupy(Grupa* grupa);
@@ -34,6 +39,7 @@ public:
     void wydrukListyZNumeracja(QStringList &lista, QString text = "", bool dodajPowrot = 0);
     int wydrukListaWybor(QStringList &lista, QString text = "", bool dodajPowrot = 0);
     Student* tworzStudenta(Grupa *grupa);
+    Grupa* tworzGrupe(Rok* rok);
     QDate pobierzDate(QString text);
     Interfejs();
     ~Interfejs();

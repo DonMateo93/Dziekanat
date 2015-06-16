@@ -320,12 +320,26 @@ void Interfejs::grupaEdit(Rok *rok)
 
 void Interfejs::grupaDelete(Rok *rok)
 {
+    if(rok != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList grupy = rok->getGrupy();
 
+            int wybor = wydrukListaWybor(grupy,"WYBIERZ GRUPE DO USUNIECIA",1);
+
+            if(wybor == grupy.size()){
+                powrot = true;
+            }else{
+                rok->usunGrupaAt(wybor - 1);
+            }
+        }
+    }
 }
 
 void Interfejs::grupaAdd(Rok *rok)
 {
-
+    tworzGrupe(rok);
 }
 
 void Interfejs::runMenuPracownicy(Rok* rok)
@@ -339,7 +353,7 @@ void Interfejs::runMenuPracownicy(Rok* rok)
 
             QStringList lista;
             lista.clear();
-            lista << "PRZEGLADAJ/EDYTUJ PRACOWNIKA";
+            lista << "PRZEGLADAJ PRACOWNIKOW";
             lista << "DODAJ PRACOWNIKA";
             lista << "USUN PRACOWNIKA";
             lista << "POWROT";
@@ -359,15 +373,15 @@ void Interfejs::runMenuPracownicy(Rok* rok)
                 {
                 case 1:
                     system("CLS");
-
+                    przegladPracownicyRok(rok);
                     break;
                 case 2:
                     system("CLS");
-
+                    dodajPracownikaDoRoku(rok);
                     break;
                 case 3:
                     system("CLS");
-
+                    usunPracownikaZRoku(rok);
                     break;
                 case 4:
                     powrot = true;
@@ -377,6 +391,78 @@ void Interfejs::runMenuPracownicy(Rok* rok)
         }
     }else{
         qDebug().noquote() << "BLAD. BRAK REFERENCJI";
+    }
+}
+
+void Interfejs::przegladPracownicyRok(Rok *rok)
+{
+    if(rok != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList pracownicy = rok->getPracownicy();
+
+            int wybor = wydrukListaWybor(pracownicy,"WYBIERZ PRACOWNIKA DO PRZEGLADU",1);
+
+            if(wybor == pracownicy.size()){
+                powrot = true;
+            }else{
+                qDebug().noquote() << rok->getPracownikAt(wybor - 1)->getInfo(1);
+                QTextStream s(stdin);
+                s.readLine();
+            }
+        }
+    }
+}
+
+void Interfejs::usunPracownikaZRoku(Rok *rok)
+{
+    if(rok != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList pracownicy = rok->getPracownicy();
+
+            int wybor = wydrukListaWybor(pracownicy,"WYBIERZ PRACOWNIKA DO USUNIECIA",1);
+
+            if(wybor == pracownicy.size()){
+                powrot = true;
+            }else{
+                if(rok->czyPracownikAtPracuje(wybor - 1)){
+                    qDebug().noquote() << "PRACOWNIK MA PRZYDZIELONE PRZEDMIOTY. NIE MOŻNA USUNĄĆ";
+                    QTextStream s(stdin);
+                    s.readLine();
+                }else{
+                    rok->usunPracownikAt(wybor - 1);
+                }
+            }
+        }
+    }
+}
+
+void Interfejs::dodajPracownikaDoRoku(Rok *rok)
+{
+    if(rok != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList pracownicy = silnik->getPracownicy();
+
+            int wybor = wydrukListaWybor(pracownicy,"WYBIERZ PRACOWNIKA DO DODANIA",1);
+
+            if(wybor == pracownicy.size()){
+                powrot = true;
+            }else{
+                if(!rok->czyJestPracownik(silnik->getPracownikAt(wybor - 1))){
+                    rok->adPracownik(silnik->getPracownikAt(wybor - 1));
+                }else{
+
+                    qDebug().noquote() << "PRACOWNIK JUŻ PRACUJE W ROKU AKADEMICKIM " + rok->getRok();
+                    QTextStream s(stdin);
+                    s.readLine();
+                }
+            }
+        }
     }
 }
 
@@ -425,11 +511,11 @@ void Interfejs::runMenuPrzedmioty(Rok* rok)
                     break;
                 case 2:
                     system("CLS");
-
+                    dodajPrzedmiotDoRoku(rok);
                     break;
                 case 3:
                     system("CLS");
-
+                    usunPrzedmiotZroku(rok);
                     break;
                 case 4:
                     powrot = true;
@@ -462,7 +548,7 @@ void Interfejs::przedmiotyRokEdit(Rok *rok)
                     QStringList pracownicy = rok->getPracownicy();
                     int wybor2 = wydrukListaWybor(pracownicy,"WYBIERZ NOWEGO PROWADZACEGO" + rok->getRok(),1);
                     if(wybor2 < pracownicy.size()){
-                        przedmiot->setProwadzacy(rok->getPracownikAt(wybor-1));
+                        przedmiot->setProwadzacy(rok->getPracownikAt(wybor2-1));
                     }
                 }
 
@@ -470,6 +556,51 @@ void Interfejs::przedmiotyRokEdit(Rok *rok)
                 qDebug().noquote() << "INNE OPCJE MOŻESZ EYDTOWAĆ TYLKO W SZABLONACH PRZEDMIOTU";
                 QTextStream s(stdin);
                 s.readLine();
+            }
+        }
+    }
+}
+
+void Interfejs::dodajPrzedmiotDoRoku(Rok *rok)
+{
+    if(rok != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList przedmioty = silnik->getPrzedmioty();
+
+            int wybor = wydrukListaWybor(przedmioty,"WYBIERZ PRZEDMIOT",1);
+
+            if(wybor == przedmioty.size()){
+                powrot = true;
+            }else{
+                Przedmiot* przedmiot = silnik->getPrzedmiotAt(wybor - 1);
+                int wybor2 = pobierzIntZZakresu(2,1,"KTORY SEMESTR? \n 1.PIERWSZY \n 2.DRUGI");
+                QStringList prowadzacy = rok->getPracownicy();
+                int wybor3 = wydrukListaWybor(prowadzacy,"WYBIERZ PRZEDMIOT");
+                Pracownik* pracownik = rok->getPracownikAt(wybor3 - 1);
+                if(pracownik != NULL && przedmiot != NULL){
+                    rok->dodajEdycjePrzedmiotu(przedmiot,pracownik,wybor2);
+                }
+            }
+        }
+    }
+}
+
+void Interfejs::usunPrzedmiotZroku(Rok *rok)
+{
+    if(rok != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList przedmioty = rok->getPrzedmioty();
+
+            int wybor = wydrukListaWybor(przedmioty,"WYBIERZ PRZEDMIOT",1);
+
+            if(wybor == przedmioty.size()){
+                powrot = true;
+            }else{
+                rok->usunPrzedmiotAt(wybor - 1);
             }
         }
     }
@@ -602,11 +733,9 @@ int Interfejs::pobierzIntZZakresu(int gorny, int dolny, QString text = "")
             }
 
             if(pom1){
-                if(pobierana.at(0) != '0'){
-                    zwrot = pobierana.toInt();
-                    if(zwrot >= dolny && zwrot <= gorny){
-                        ok = true;
-                    }
+                zwrot = pobierana.toInt();
+                if(zwrot >= dolny && zwrot <= gorny){
+                    ok = true;
                 }
             }
         }
@@ -621,8 +750,9 @@ int Interfejs::pobierzIntZZakresu(int gorny, int dolny, QString text = "")
 bool Interfejs::pytanieTakNie(QString text)
 {
     qDebug().noquote()<<text;
-    qDebug().noquote()<<"1.TAK";
     qDebug().noquote()<<"0.NIE";
+    qDebug().noquote()<<"1.TAK";
+
     int wybor = pobierzIntZZakresu(1,0);
     if(wybor == 1){
         return true;
@@ -695,6 +825,50 @@ Student *Interfejs::tworzStudenta(Grupa* grupa)
     qDebug().noquote()<<"STUDENT DODANY";
     s.readLine();
     return stud;
+}
+
+Grupa *Interfejs::tworzGrupe(Rok* rok)
+{
+    system("CLS");
+    QTextStream s(stdin);
+    QString nazwa;
+
+    bool ok = false;
+    while(!ok){
+        qDebug().noquote()<<"PODAJ NAZWE GRUPY";
+        nazwa = s.readLine();
+        if(nazwa != "")
+            ok = true;
+        else
+            qDebug().noquote()<<"BŁĘDNA NAZWA. POWTORZ WPISYWANIE";
+    }
+
+    int rokS = pobierzIntZZakresu(5,1,"PODAJ ROK STUDIOW");
+
+    nazwa = QString::number(rokS) + nazwa;
+
+    int semestr = 0;
+    if(rok->getAktualnySem() == 1)
+            semestr = 2*rokS - 1;
+    else if(rok->getAktualnySem() == 2)
+        semestr = 2*rokS;
+
+    qDebug().noquote()<<"PODAJ SPECJALNOŚĆ";
+    QString specjalnosc = s.readLine();
+
+    qDebug().noquote()<<"PODAJ KIERUNEK";
+    QString kierunek = s.readLine();
+
+    qDebug().noquote()<<"PODAJ WYDZIAŁ";
+    QString wydzial = s.readLine();
+
+    Grupa* grupa = new Grupa(nazwa,specjalnosc,wydzial,kierunek,rok,rokS,semestr);
+    rok->adGrupa(grupa);
+
+    system("CLS");
+    qDebug().noquote()<<"GRUPA DODANA DO ROKU";
+    s.readLine();
+    return grupa;
 }
 
 QDate Interfejs::pobierzDate(QString text = "")

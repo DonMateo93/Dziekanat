@@ -22,40 +22,12 @@ enum Ocena
     dwa
 };
 
-class SkladowaPrzedmiotu
-{
-public:
-    virtual void f() = 0;
-};
-
-class Egzamin: SkladowaPrzedmiotu
-{
-public:
-
-};
-
-class Laboratorium: SkladowaPrzedmiotu
-{
-public:
-
-};
-
-class Projekt: SkladowaPrzedmiotu
-{
-public:
-
-};
-
-class Cwiczenia: SkladowaPrzedmiotu
-{
-public:
-
-};
-
-class Wyklad: SkladowaPrzedmiotu
-{
-public:
-
+enum SkladowaPrzedmiotu{
+    Laboratorium,
+    Projekt,
+    Cwiczenia,
+    Wyklad,
+    Egzamin
 };
 
 
@@ -66,7 +38,7 @@ protected:
     QString nazwa;
     QString opis;
     QString skrot;
-    QList<SkladowaPrzedmiotu*> skladoweList;
+    QList<SkladowaPrzedmiotu> skladoweList;
 
 public:
     QString getInfo(bool szczegolowo = 0);
@@ -75,8 +47,10 @@ public:
     QString getOpis(){return opis;}
     QString getSkrot(){return skrot;}
     int getECTS(){return ects;}
-    QList<SkladowaPrzedmiotu*> getSkladowe(){return skladoweList;}
+    QList<SkladowaPrzedmiotu> getSkladowe(){return skladoweList;}
     Przedmiot();
+    Przedmiot(QString naz,QString opi,QString skr,QList<SkladowaPrzedmiotu> sklad,int ect)
+        :nazwa(naz),opis(opi),skrot(skr),skladoweList(sklad),ects(ect){}
     ~Przedmiot();
 };
 
@@ -88,28 +62,24 @@ public:
     QString getInfo(bool szczegolowo = 0);
     void setProwadzacy(Pracownik* pr);
     EdycjaPrzedmotu();
-    EdycjaPrzedmotu(Przedmiot* przedmiot);
+    EdycjaPrzedmotu(Przedmiot* przedmiot, Pracownik* prow, Semestr* sem = NULL);
+    Semestr* getSemestr(){return semestr;}
 
 };
 
-class SkladowaInfoS
-{
-    SkladowaPrzedmiotu* skladowa;
+class SkladowaInfoS{
+    SkladowaPrzedmiotu skladowa;
+    Pracownik* pracownik;
     Ocena ocena;
-    Pracownik* prowadzacy;
 };
 
 class PrzedmiotInfoS
 {
+    QList<SkladowaInfoS> skladowe;
     EdycjaPrzedmotu* przedmiot;
     Ocena koncowa;
-    QList<SkladowaInfoS*> skladowa;
 };
 
-class SkladowaInfoP
-{
-    SkladowaPrzedmiotu* skladowa;
-    QList<Grupa*> ktoreGrupy;
-};
+
 
 #endif // PRZEDMIOT_H

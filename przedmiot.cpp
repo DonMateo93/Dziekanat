@@ -8,7 +8,7 @@ QString Przedmiot::getInfo(bool szczegolowo)
         zwrot += "NAZWA: " + nazwa + "\n";
         zwrot += "SKROT: " + skrot + "\n";
         zwrot += "ECTS: " + QString::number(ects) + "\n";
-        zwrot += "ADRES E-MAIL PRZEDMIOT SKLADA SIE Z:\n";
+        zwrot += "PRZEDMIOT SKLADA SIE Z:\n";
         zwrot += jakieSkladowe().join("\n") + "\n";
         zwrot += "OPIS: " + opis + "\n";
     }else{
@@ -24,15 +24,15 @@ QStringList Przedmiot::jakieSkladowe()
     zwrot.clear();
 
     for(int i = 0; i < skladoweList.size(); i++){
-        if(dynamic_cast<Egzamin*>(skladoweList.at(i))){
+        if(skladoweList.at(i) == Egzamin){
             zwrot << "Egzamin";
-        }else if(dynamic_cast<Laboratorium*>(skladoweList.at(i))){
+        }else if(skladoweList.at(i) == Laboratorium){
             zwrot << "Laboratorium";
-        }else if(dynamic_cast<Cwiczenia*>(skladoweList.at(i))){
+        }else if(skladoweList.at(i) == Cwiczenia){
             zwrot << "Cwiczenia";
-        }else if(dynamic_cast<Projekt*>(skladoweList.at(i))){
+        }else if(skladoweList.at(i) == Projekt){
             zwrot << "Projekt";
-        }else if(dynamic_cast<Wyklad*>(skladoweList.at(i))){
+        }else if(skladoweList.at(i) == Wyklad){
             zwrot << "Wyklad";
         }
     }
@@ -72,19 +72,13 @@ void EdycjaPrzedmotu::setProwadzacy(Pracownik *pr)
         prowadzacy = pr;
 }
 
-EdycjaPrzedmotu::EdycjaPrzedmotu(Przedmiot *przedmiot)
+EdycjaPrzedmotu::EdycjaPrzedmotu(Przedmiot *przedmiot, Pracownik *prow, Semestr *sem )
+    :prowadzacy(prow),semestr(sem)
 {
     ects = przedmiot->getECTS();
     nazwa = przedmiot->getNazwa();
     opis = przedmiot->getOpis();
     skrot = przedmiot->getSkrot();
-    QList<SkladowaPrzedmiotu*> lista = przedmiot->getSkladowe();
-
-    QStringList listas = przedmiot->jakieSkladowe();
-    QString str = "Egzamin";
-    if(listas.contains(str)){
-        SkladowaPrzedmiotu* skl = new Egzamin;
-        skladoweList<<skl;
-    }
+    skladoweList = przedmiot->getSkladowe();
 }
 
