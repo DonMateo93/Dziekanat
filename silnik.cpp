@@ -2,11 +2,42 @@
 #include "silnik.h"
 
 
+void Silnik::dodajNowyRokAutomatycznie()
+{
+    porzadkujRoczniki();
+
+    Semestr* pierwszy = listaLat.at(listaLat.size()-1)->getSem(1);
+    Semestr* drugi = listaLat.at(listaLat.size()-1)->getSem(2);
+
+    Semestr* nowy1 = new Semestr(pierwszy->getStart().addYears(1),pierwszy->getEnd().addYears(1));
+    Semestr* nowy2 = new Semestr(drugi->getStart().addYears(1),drugi->getEnd().addYears(1));
+
+    for(int i = 0; i < pierwszy->getIlePrzedmiotow(); i++){
+        EdycjaPrzedmotu* edycja = new EdycjaPrzedmotu(pierwszy->getPrzedmiotAt(i));
+        edycja->setSemestr(nowy1);
+        nowy1->addPrzedmiot(edycja);
+    }
+
+    for(int j = 0; j < pierwszy->getIlePrzedmiotow(); j++){
+        EdycjaPrzedmotu* edycja2 = new EdycjaPrzedmotu(drugi->getPrzedmiotAt(j));
+        edycja2->setSemestr(nowy2);
+        nowy2->addPrzedmiot(edycja2);
+    }
+
+    Rok* rok =new Rok(nowy1,nowy2);
+    addNowyRok(rok);
+}
+
 void Silnik::addNowyRok(QDate st1,QDate en1,QDate st2,QDate en2)
 {
     Semestr* pierwszy = new Semestr(st1,en1);
     Semestr* drugi = new Semestr(st2,en2);
     Rok* rok = new Rok(pierwszy,drugi);
+    listaLat.push_back(rok);
+}
+
+void Silnik::addNowyRok(Rok *rok)
+{
     listaLat.push_back(rok);
 }
 
@@ -65,6 +96,19 @@ void Silnik::adPracownik(Pracownik *pracownik)
 {
     if(pracownik != NULL)
         pracownicy.push_back(pracownik);
+}
+
+void Silnik::porzadkujRoczniki()
+{
+    for(int i = listaLat.size() - 1; i > 0; i --){
+        for(int j = 0; j < i; j++)
+            if(listaLat.at(j)->getStartRok() > listaLat.at(j+1)->getStartRok()){
+                listaLat.swap(j,j+1);
+            }
+    }
+    listaLat.at(listaLat.size()-1)->setAktualny();
+    for(int k = 0; k < listaLat.size() - 1; k++)
+        listaLat.at(k)->setNieAktualny();
 }
 
 bool Silnik::czyJestPrzedmiotONazwie(QString nazwa)

@@ -19,7 +19,9 @@ class Silnik
     QList<Pracownik*> pracownicy;
     QList<Student*> studenci;
 public:
+    void dodajNowyRokAutomatycznie();
     void addNowyRok(QDate st1, QDate en1, QDate st2, QDate en2);
+    void addNowyRok(Rok* rok);
     void addPrzedmiot(Przedmiot* przedmiot);
     void usunPrzedmiotAt(int at);
     void usunPracownikAt(int at);
@@ -28,6 +30,7 @@ public:
     void zamienStudentAt(int at, Student *student);
     void adStudent(Student* student);
     void adPracownik(Pracownik* pracownik);
+    void porzadkujRoczniki();
     bool czyJestPrzedmiotONazwie(QString nazwa);
     bool czyJestPracownikOID(QString nazwa);
     bool czyJestStudentOIndeksie(int indeks);

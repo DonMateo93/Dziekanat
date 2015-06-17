@@ -31,6 +31,7 @@ public:
     void grupaEdit(Rok *rok);
     void zarzadzajKontemStudentow(Grupa* grupa);
     void zarzadzajKontemStudenta(Student* student);
+    void wpiszStudentowiOcene(Student* student);
     void przypiszProwadzacegoDoSkladowej(Student* student);
     void grupaDelete(Rok *rok);
     void grupaAdd(Rok *rok);
@@ -54,6 +55,7 @@ public:
     Pracownik* tworzEdytujPracownika(Pracownik* pracownik = NULL);
     Grupa* tworzGrupe(Rok* rok);
     QDate pobierzDate(QString text);
+    Ocena pobierzOcene();
     Interfejs();
     ~Interfejs();
 };

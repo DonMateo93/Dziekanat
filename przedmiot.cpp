@@ -82,6 +82,17 @@ EdycjaPrzedmotu::EdycjaPrzedmotu(Przedmiot *przedmiot, Pracownik *prow, Semestr 
     skladoweList = przedmiot->getSkladowe();
 }
 
+EdycjaPrzedmotu::EdycjaPrzedmotu(EdycjaPrzedmotu *przedmiot)
+{
+    ects = przedmiot->getECTS();
+    nazwa = przedmiot->getNazwa();
+    opis = przedmiot->getOpis();
+    skrot = przedmiot->getSkrot();
+    skladoweList = przedmiot->getSkladowe();
+    prowadzacy = przedmiot->getProwadzacy();
+    semestr = przedmiot->getSemestr();
+}
+
 
 
 void SkladowaInfoS::setPracownik(Pracownik *prac)
@@ -174,18 +185,37 @@ void PrzedmiotInfoS::setListSklad(QList<SkladowaInfoS> skl)
     skladowe = skl;
 }
 
-QString PrzedmiotInfoS::getInfo()
+QString PrzedmiotInfoS::getInfo(bool szczegolowo)
 {
     QString zwrot = "";
 
     if(przedmiot != NULL){
-        zwrot += przedmiot->getInfo();
-        zwrot =zwrot + "OCENA" + ": " + getOcenaAsString();
-        for(int i = 0; i < skladowe.size(); i++){
-            zwrot += "--------------------\n";
-            zwrot += skladowe.at(i).getInfo();
-            zwrot += "--------------------\n";
+        if(szczegolowo){
+            zwrot += przedmiot->getInfo();
+            zwrot =zwrot + "OCENA" + ": " + getOcenaAsString();
+            for(int i = 0; i < skladowe.size(); i++){
+                zwrot += "--------------------\n";
+                SkladowaInfoS skl = skladowe.at(i);
+                QString pom = skl.getInfo();
+                zwrot = zwrot + pom;
+                zwrot += "--------------------\n";
+            }
+        }else{
+            zwrot += przedmiot->getInfo();
         }
+    }
+
+    return zwrot;
+}
+
+QStringList PrzedmiotInfoS::getSkladoweAsList()
+{
+    QStringList zwrot;
+    zwrot.clear();
+
+    for(int i = 0; i < skladowe.size(); i++){
+         SkladowaInfoS sklad = skladowe.at(i);
+         zwrot << sklad.getAsString();
     }
 
     return zwrot;
@@ -219,4 +249,42 @@ QString PrzedmiotInfoS::getOcenaAsString()
         break;
     }
     return zwrot;
+}
+
+void PrzedmiotInfoS::setProwadzacyAtSkladowa(int at, Pracownik *prowadzacy)
+{
+//    SkladowaPrzedmiotu szukana;
+
+//    if(at == "WYKLAD"){
+//        szukana = Wyklad;
+//    }else if(at == "EGZAMIN"){
+//        szukana = Egzamin;
+//    }else if(at == "CWICZENIA"){
+//        szukana= Cwiczenia;
+//    }else if(at == "LABORATORIUM"){
+//        szukana = Laboratorium;
+//    }else if(at == "PROJEKT"){
+//        szukana = Projekt;
+//    }
+
+//    for(int i = 0; i < skladowe.size(); i ++){
+//        SkladowaInfoS skladowa = skladowe.at(i);
+//        if(skladowa.getSkladowa()==szukana){
+//            skladowa.setPracownik(prowadzacy);
+//            break;
+//        }
+//    }
+
+    if(at < skladowe.size() && at >= 0){
+        SkladowaInfoS sklad = skladowe.at(at);
+        sklad.setPracownik(prowadzacy);
+    }
+}
+
+void PrzedmiotInfoS::setOcenaAtSkladowa(int at, Ocena ocena)
+{
+    if(at < skladowe.size() && at >= 0){
+        SkladowaInfoS sklad = skladowe.at(at);
+        sklad.setOcena(ocena);
+    }
 }

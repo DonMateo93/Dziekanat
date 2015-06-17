@@ -49,14 +49,28 @@ void Student::setGrupa(Grupa *gru)
         grupa = gru;
 }
 
-void Student::przypiszProwadzacego(Przedmiot *przedmiot, Pracownik *pracownik, SkladowaPrzedmiotu skladowa)
+void Student::przypiszProwadzacego(Pracownik *pracownik, int atP, int atS)
 {
-
+    if(atP < przedmiotyInfo.size() && atP >= 0){
+        PrzedmiotInfoS przedmiot = przedmiotyInfo.at(atP);
+        przedmiot.setProwadzacyAtSkladowa(atS,pracownik);
+    }
 }
 
-void Student::przypiszOcene(Przedmiot *przedmiot, SkladowaPrzedmiotu skladowa, Ocena ocena)
+void Student::przypiszOcene(Ocena ocena, int atP, int atS)
 {
+    if(atP < przedmiotyInfo.size() && atP >= 0){
+        PrzedmiotInfoS przedmiot = przedmiotyInfo.at(atP);
+        przedmiot.setOcenaAtSkladowa(atS,ocena);
+    }
+}
 
+void Student::setKoncowaAt(Ocena ocena, int atP)
+{
+    if(atP < przedmiotyInfo.size() && atP >= 0){
+        PrzedmiotInfoS przedmiot = przedmiotyInfo.at(atP);
+        przedmiot.setKoncowa(ocena);
+    }
 }
 
 QString Student::getKartaOcen()
@@ -64,10 +78,13 @@ QString Student::getKartaOcen()
     QString zwrot;
     for(int i = 0; i < przedmiotyInfo.size(); i++){
         zwrot += "====================================\n";
-        QString pom = przedmiotyInfo.at(i).getInfo();
+        PrzedmiotInfoS przedm = przedmiotyInfo.at(i);
+        QString pom = przedm.getInfo(1);
         zwrot = zwrot + pom;
         zwrot += "====================================\n";
     }
+
+    return zwrot;
 }
 
 bool Student::getCzyPrzydzielonyDoGrupy()
@@ -76,6 +93,56 @@ bool Student::getCzyPrzydzielonyDoGrupy()
         return false;
     else
         return true;
+}
+
+QStringList Student::getPrzedmioty()
+{
+    QStringList zwrot;
+    zwrot.clear();
+
+    for(int i = 0; i < przedmiotyInfo.size(); i ++){
+        PrzedmiotInfoS przedmiot = przedmiotyInfo.at(i);
+        zwrot << przedmiot.getInfo();
+    }
+
+    return zwrot;
+}
+
+QStringList Student::getSkladowePrzedmiotAt(int at)
+{
+    QStringList lista;
+    lista.clear();
+    if(at < przedmiotyInfo.size() && at >= 0){
+        PrzedmiotInfoS przedmiot = przedmiotyInfo.at(at);
+        lista = przedmiot.getSkladoweAsList();
+    }
+
+    return lista;
+}
+
+bool Student::czyMaPrzypisanyPrzedmiot(EdycjaPrzedmotu *przedmiot)
+{
+    bool odp = false;
+    for(int i = 0; i < przedmiotyInfo.size(); i ++){
+        PrzedmiotInfoS tmp = przedmiotyInfo.at(i);
+        if(tmp.getEdycja() == przedmiot){
+            odp = true;
+            break;
+        }
+    }
+    return odp;
+}
+
+void Student::nowyPrzedmiot(EdycjaPrzedmotu* przedmiot)
+{
+    QList<SkladowaPrzedmiotu> skladowe = przedmiot->getSkladowe();
+    QList<SkladowaInfoS> lista;
+    for(int i = 0; i < skladowe.size(); i++){
+        SkladowaInfoS tmp(skladowe.at(i));
+        lista << tmp;
+    }
+    PrzedmiotInfoS przedm(lista,przedmiot,brak);
+    przedmiotyInfo << przedm;
 }
 
 
@@ -212,5 +279,17 @@ Student *Grupa::getStudentAt(int at)
         return studList.at(at);
     }else{
         return NULL;
+    }
+}
+
+void Grupa::przypiszStudentomPrzedmioty()
+{
+    for(int i = 0; i < studList.size(); i++){
+        for(int j = 0; j < przedList.size(); j++){
+            if(!studList.at(i)->czyMaPrzypisanyPrzedmiot(przedList.at(j)))
+            {
+                studList.at(i)->nowyPrzedmiot(przedList.at(j));
+            }
+        }
     }
 }

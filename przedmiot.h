@@ -62,9 +62,12 @@ class EdycjaPrzedmotu: public Przedmiot
 public:
     QString getInfo(bool szczegolowo = 0);
     void setProwadzacy(Pracownik* pr);
+    Pracownik* getProwadzacy(){return prowadzacy;}
     EdycjaPrzedmotu();
     EdycjaPrzedmotu(Przedmiot* przedmiot, Pracownik* prow, Semestr* sem = NULL);
+    EdycjaPrzedmotu(EdycjaPrzedmotu* przedmiot);
     Semestr* getSemestr(){return semestr;}
+    void setSemestr(Semestr* sem){semestr = sem;}
 
 };
 
@@ -73,6 +76,8 @@ class SkladowaInfoS{
     Pracownik* pracownik;
     Ocena ocena;
 public:
+    SkladowaInfoS(SkladowaPrzedmiotu sklad,Ocena oc = brak,Pracownik* pra = NULL)
+        :skladowa(sklad),ocena(oc),pracownik(pra){}
     SkladowaPrzedmiotu getSkladowa(){return skladowa;}
     Pracownik* getPracownik(){return pracownik;}
     Ocena getOcena(){return ocena;}
@@ -86,17 +91,22 @@ public:
 
 class PrzedmiotInfoS
 {
-    QList<SkladowaInfoS> skladowe;
+    QList< SkladowaInfoS > skladowe;
     EdycjaPrzedmotu* przedmiot;
     Ocena koncowa;
 public:
+    PrzedmiotInfoS(QList< SkladowaInfoS > sklad,EdycjaPrzedmotu* przedm = NULL,Ocena konc = brak)
+        :skladowe(sklad),przedmiot(przedm),koncowa(konc){}
     EdycjaPrzedmotu* getEdycja(){return przedmiot;}
     Ocena getKoncowa(){return koncowa;}
     void setEdycja(EdycjaPrzedmotu* przedm);
     void setKoncowa(Ocena konc);
     void setListSklad(QList<SkladowaInfoS> skl);
-    QString getInfo();
+    QString getInfo(bool szczegolowo = 0);
+    QStringList getSkladoweAsList();
     QString getOcenaAsString();
+    void setProwadzacyAtSkladowa(int at, Pracownik* prowadzacy);
+    void setOcenaAtSkladowa(int at, Ocena ocena);
 };
 
 

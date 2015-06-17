@@ -5,7 +5,6 @@ using namespace std;
 
 bool Interfejs::runMenuGlowne()
 {
-    bool NieWychodz = false;
     QStringList lista;
     lista.clear();
     lista << "DODAJ NOWY ROK AKADEMICKI";
@@ -124,41 +123,47 @@ void Interfejs::dodajRok()
     QDate start1,end1,start2,end2;
     bool dobrze2 = false;
 
-    while(!dobrze2){
+    bool Automatycznie = pytanieTakNie("CZY CHCESZ DODAĆ NOWY ROK AUTOMATYCZNIE");
+    if(Automatycznie){
+        silnik->dodajNowyRokAutomatycznie();
+    }else{
+        while(!dobrze2){
 
-        bool dobrze = false;
-        qDebug().noquote() <<"UZUPELNIJ DANE DOTYCZACE SEMESTRU PIERWSZEGO:"<< endl;
-        while(!dobrze)
-        {
-            start1 = pobierzDate("PODAJ DATE ROZPOCZECIA SEMESTRU I");
-            end1 = pobierzDate("PODAJ DATE ZAKONCZENIA SEMESTRU I");
-            if(start1 > end1)
-                qDebug().noquote() <<"DATA ROZPOCZECIA NIE MOZE BYC WIEKSZA NIZ ZAKONCZENIA!"<<endl;
+            bool dobrze = false;
+            qDebug().noquote() <<"UZUPELNIJ DANE DOTYCZACE SEMESTRU PIERWSZEGO:"<< endl;
+            while(!dobrze)
+            {
+                start1 = pobierzDate("PODAJ DATE ROZPOCZECIA SEMESTRU I");
+                end1 = pobierzDate("PODAJ DATE ZAKONCZENIA SEMESTRU I");
+                if(start1 > end1)
+                    qDebug().noquote() <<"DATA ROZPOCZECIA NIE MOZE BYC WIEKSZA NIZ ZAKONCZENIA!"<<endl;
+                else
+                    dobrze = true;
+            }
+
+            dobrze = false;
+            qDebug().noquote() <<"UZUPELNIJ DANE DOTYCZACE SEMESTRU DRUGIEGO:"<<endl;
+            while(!dobrze)
+            {
+                start2 = pobierzDate("PODAJ DATE ROZPOCZECIA SEMESTRU II");
+                end2 = pobierzDate("PODAJ DATE ZAKONCZENIA SEMESTRU II");
+                if(start2 > end2)
+                    qDebug().noquote() <<"DATA ROZPOCZECIA NIE MOZE BYC WIEKSZA NIZ ZAKONCZENIA!"<<endl;
+                else
+                    dobrze = true;
+            }
+
+            if(start2 < end1)
+                qDebug().noquote() <<"SEMESTR PIERWSZY MUSI SIE SKONCZYC ZANIM ZACZNIE SIE NASTEPNY!"<<endl;
+            else if(start2.year() - start1.year() >= 2)
+                qDebug().noquote() <<"ZA DLUGA PRZERWA POMIEDZY SEMESTRAMI!"<<endl;
             else
-                dobrze = true;
+                dobrze2 = true;
         }
 
-        dobrze = false;
-        qDebug().noquote() <<"UZUPELNIJ DANE DOTYCZACE SEMESTRU DRUGIEGO:"<<endl;
-        while(!dobrze)
-        {
-            start2 = pobierzDate("PODAJ DATE ROZPOCZECIA SEMESTRU II");
-            end2 = pobierzDate("PODAJ DATE ZAKONCZENIA SEMESTRU II");
-            if(start2 > end2)
-                qDebug().noquote() <<"DATA ROZPOCZECIA NIE MOZE BYC WIEKSZA NIZ ZAKONCZENIA!"<<endl;
-            else
-                dobrze = true;
-        }
-
-        if(start2 < end1)
-            qDebug().noquote() <<"SEMESTR PIERWSZY MUSI SIE SKONCZYC ZANIM ZACZNIE SIE NASTEPNY!"<<endl;
-        else if(start2.year() - start1.year() >= 2)
-            qDebug().noquote() <<"ZA DLUGA PRZERWA POMIEDZY SEMESTRAMI!"<<endl;
-        else
-            dobrze2 = true;
+        silnik->addNowyRok(start1,end1,start2,end2);
     }
 
-    silnik->addNowyRok(start1,end1,start2,end2);
 
 }
 
@@ -449,6 +454,7 @@ void Interfejs::grupaEdit(Rok *rok)
                 lista << "DODAJ STUDENTA";
                 lista << "ZARZADZAJ KONTEM STUDENTOW";
                 lista << "EDYTUJ PRZEDMIOTY";
+                lista << "PRZYPISZ WSZYSTKIM STUDENTOM DOSTEPNE PRZEDMIOTY";
                 lista << "POWROT";
 
                 QStringList pomocnicza;
@@ -502,6 +508,10 @@ void Interfejs::grupaEdit(Rok *rok)
                     break;
                 case 6:
                     system("CLS");
+                    grupa->przypiszStudentomPrzedmioty();
+                    break;
+                case 7:
+                    system("CLS");
                     powrot = true;
                     break;
                 }
@@ -531,6 +541,7 @@ void Interfejs::zarzadzajKontemStudentow(Grupa *grupa)
 
 void Interfejs::zarzadzajKontemStudenta(Student *student)
 {
+    QTextStream s(stdin);
     if(student != NULL){
         system("CLS");
         bool powrot = false;
@@ -548,14 +559,45 @@ void Interfejs::zarzadzajKontemStudenta(Student *student)
             }else{
                 switch (wybor) {
                 case 1:
-
+                    system("CLS");
+                    przypiszProwadzacegoDoSkladowej(student);
                     break;
                 case 2:
+                    system("CLS");
 
                     break;
                 case 3:
-                    student->getKartaOcen();
+                    system("CLS");
+                    qDebug().noquote() << student->getKartaOcen();
+                    s.readLine();
                     break;
+                }
+            }
+        }
+    }
+}
+
+void Interfejs::wpiszStudentowiOcene(Student *student)
+{
+    if(student != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList przedmioty = student->getPrzedmioty();
+
+            int wybor = wydrukListaWybor(przedmioty,"WYBIERZ PRZEDMIOT",1);
+
+            if(wybor == przedmioty.size()){
+                powrot = true;
+            }else{
+                QStringList skladowe = student->getSkladowePrzedmiotAt(wybor - 1);
+                skladowe << "KONCOWA";
+                int wybor2 = wydrukListaWybor(skladowe,"WYBIERZ SKLADOWA DO PRZYPISANIA OCENY");
+                Ocena ocena = pobierzOcene();
+                if(wybor2 == skladowe.size()){
+                    student->setKoncowaAt(ocena,wybor - 1);
+                }else {
+                    student->przypiszOcene(ocena,wybor - 1,wybor2 - 1);
                 }
             }
         }
@@ -564,8 +606,26 @@ void Interfejs::zarzadzajKontemStudenta(Student *student)
 
 void Interfejs::przypiszProwadzacegoDoSkladowej(Student *student)
 {
-    //QStringList pracownicy = student->getGrupa()->getRok()->getPracownicy();
-    //TU ZAZCZYNAMY
+
+    if(student != NULL){
+        system("CLS");
+        bool powrot = false;
+        while(!powrot){
+            QStringList przedmioty = student->getPrzedmioty();
+
+            int wybor = wydrukListaWybor(przedmioty,"WYBIERZ PRZEDMIOT",1);
+
+            if(wybor == przedmioty.size()){
+                powrot = true;
+            }else{
+                QStringList skladowe = student->getSkladowePrzedmiotAt(wybor - 1);
+                int wybor2 = wydrukListaWybor(skladowe,"WYBIERZ SKLADOWA DO PRZYPISANIA PROWADZACEGO");
+                QStringList pracownicy = student->getGrupa()->getRok()->getPracownicy();
+                int wybor3 = wydrukListaWybor(pracownicy,"WYBIERZ PROWADZACEGO");
+                student->przypiszProwadzacego(student->getGrupa()->getRok()->getPracownikAt(wybor3-1),wybor-1,wybor2-1);
+            }
+        }
+    }
 }
 
 void Interfejs::grupaDelete(Rok *rok)
@@ -1205,6 +1265,51 @@ QDate Interfejs::pobierzDate(QString text = "")
         }
     }
     system("CLS");
+    return zwrot;
+}
+
+Ocena Interfejs::pobierzOcene()
+{
+    QStringList lista;
+    lista.clear();
+    lista << "5.0";
+    lista << "4.5";
+    lista << "4.0";
+    lista << "3.5";
+    lista << "3.0";
+    lista << "2.0";
+
+    QString pom;
+    for(int i = 0; i < lista.size(); i++){
+        pom = QString::number(i+1) + "." + lista.at(i);
+        lista.replace(i,pom);
+    }
+
+    int wybor = wydrukListaWybor(lista,"WYBIERZ OCENE");
+    Ocena zwrot;
+    switch(wybor){
+    case 1:
+        zwrot = piec;
+        break;
+    case 2:
+        zwrot = czteryIPol;
+        break;
+    case 3:
+        zwrot = cztery;
+        break;
+    case 4:
+        zwrot = trzyIpol;
+        break;
+    case 5:
+        zwrot = trzy;
+        break;
+    case 6:
+        zwrot = dwa;
+        break;
+    default:
+        zwrot = brak;
+        break;
+    }
     return zwrot;
 }
 

@@ -44,16 +44,21 @@ class Student: public Osoba
 public:
     QString getInfo(bool szczegolowo = 0);
     void setGrupa(Grupa* gru);
-    void przypiszProwadzacego(Przedmiot* przedmiot,Pracownik* pracownik,SkladowaPrzedmiotu skladowa);
-    void przypiszOcene(Przedmiot* przedmiot,SkladowaPrzedmiotu skladowa,Ocena ocena);
+    void przypiszProwadzacego(Pracownik* pracownik,int atP,int atS);
+    void przypiszOcene(Ocena ocena,int atP,int atS);
+    void setKoncowaAt(Ocena ocena,int atP);
     QString getKartaOcen();
     Grupa* getGrupa(){return grupa;}
     int getAlbum(){return nrAlbumu;}
     bool getCzyPrzydzielonyDoGrupy();
     Student();
+    QStringList getPrzedmioty();
+    QStringList getSkladowePrzedmiotAt(int at);
     Student(int nrAl,int ects,QString im,QString naz,QString adr,QString pes,QString mai,QDate dat,Grupa* gru = NULL)
         :Osoba(im,naz,adr,pes,mai,dat),nrAlbumu(nrAl),ECTS(ects),grupa(gru){}
     ~Student(){}
+    bool czyMaPrzypisanyPrzedmiot(EdycjaPrzedmotu* przedmiot);
+    void nowyPrzedmiot(EdycjaPrzedmotu *przedmiot);
 };
 
 class Pracownik: public Osoba
@@ -94,6 +99,7 @@ public:
     void addStudent(Student* stud);
     void addPrzedmiot(EdycjaPrzedmotu* przedmiot);
     void usunPrzedmiotAt(int at, bool zastDoStud = 0);
+    void setNazwa(QString naz){id = naz;}
     bool czyJestPrzedmiot(EdycjaPrzedmotu* przedmiot);
     QString getID();
     QString getNazwa();
@@ -104,6 +110,7 @@ public:
     QStringList getStudList();
     QStringList getPrzedmList();
     Student *getStudentAt(int at);
+    void przypiszStudentomPrzedmioty();
 
 
 };

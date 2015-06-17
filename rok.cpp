@@ -1,5 +1,5 @@
 #include "rok.h"
-
+#include <QChar>
 EdycjaPrzedmotu *Rok::getPrzedmiotAt(int at)
 {
     if(at < pierwszy->getIlePrzedmiotow() && at >=0){
@@ -102,6 +102,18 @@ Rok::Rok(Semestr* pierw = NULL, Semestr* dru = NULL):pierwszy(pierw),drugi(dru)
     pracownicyLista.clear();
     grupyLista.clear();
     aktualny  = 1;
+}
+
+Rok::Rok(Semestr *pierw, Semestr *dru, QList<Grupa *> grupy, QList<Pracownik *> pracownicy)
+{
+    pierwszy = pierw;
+    drugi = dru;
+
+    for(int i = 0; i < grupy.size(); i++){
+        if(grupy.at(i)->getNazwa().at(0)>='0' && grupy.at(i)->getNazwa().at(0)<'9'){
+
+        }
+    }
 }
 
 void Rok::aktualizujEdycjeWGrupach()
